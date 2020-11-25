@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
-import { RequestValidationError } from "./../errors/request-vadilation-error";
+import { check, body } from "express-validator";
 import { BadRequestError } from "./../errors/bad-request-error";
 import { User } from "../models/user";
 import jwt from "jsonwebtoken";
@@ -10,13 +9,8 @@ const router = express.Router();
 
 router.post("/api/users/signup",
   [
-    body('email')
-      .isEmail()
-      .withMessage("Email is invalid"),
-    body('password')
-      .trim()
-      .isLength({ min: 4, max: 20 })
-      .withMessage("Password is invalid")
+    check('email').normalizeEmail().isEmail(),
+    check("password", "Password is invalid").trim().isLength({ min: 4, max: 20 })
   ],
   validateRequest,
   async (request: Request, response: Response) => {
